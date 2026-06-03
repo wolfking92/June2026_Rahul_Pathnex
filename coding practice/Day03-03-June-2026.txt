@@ -1,0 +1,140 @@
+Ansible  - Create User
+
+---
+- name: Create user
+  hosts: all
+  become: yes
+
+  tasks: 
+    - name: Create User Pathnex-admin
+      user:
+        name: pathnex-admin
+        shell: /bin/bash
+
+
+Terraform -Secuirty Group 
+
+provider "aws" {
+    region = "ap-south-1"
+}
+
+resource "aws_secuirty_group" "PathnexSG"{
+    name = "PathnexSG"
+    vpc_id = aws_vpc.myvpc_03.id
+    description = "pathnexSG for SSH"
+
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_block = ["0.0.0.0/0"]
+
+    }
+
+    engress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cird_block = ["0.0.0.0/."]
+
+    }
+
+    tags {
+        name = "Pathnex-EC2"
+    }
+}
+
+
+
+
+Kubernetes - Add Environment Varibles
+
+apiVersion: v1
+kind: Pod
+metadata: 
+    name: pathnex-env-pod
+spec:
+    container:
+        - name: app
+          image: nginx
+          env:
+            -name: APP_ENV
+             value: "production"
+
+
+
+
+Shell Script - Check File Exists
+
+#!/bin/bash
+FILE="/tmp/pathnex/txt"
+
+if [ -f "$FILE" ]; then
+    echo "File Exists"
+eles 
+    echo "File do not Exists"
+
+
+
+
+Jenkins Pipeline — NodeJS Build
+
+
+pipeline {
+    agent any
+    tools {
+        nodejs 'NodeJS-16'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/Pathnex/sample-node-app.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+    }
+}
+
+GitLab CI — NodeJS Build
+
+stages:
+  - install
+  - test
+  - build
+
+node-install:
+  stage: install
+  image: node:16
+  script:
+    - git clone https://github.com/Pathnex/sample-node-app.git
+    - cd sample-node-app
+    - npm install
+
+node-test:
+  stage: test
+  image: node:16
+  script:
+    - cd sample-node-app
+    - npm test
+
+node-build:
+  stage: build
+  image: node:16
+  script:
+    - cd sample-node-app
+    - npm run build
