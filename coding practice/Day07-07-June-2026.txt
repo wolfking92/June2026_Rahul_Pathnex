@@ -1,3 +1,5 @@
+Total Time Taken 16 min
+
 Ansible 
 
 ---
@@ -37,11 +39,11 @@ metadata:
 spec:
     replicas: 2
     selector:
-        matchlables:
+        matchLabels:
             app: nginx
     template:
         metadata:
-            lables:
+            labels:
                 app: nginx
         spec:
             containers:
