@@ -1,0 +1,133 @@
+Ansible
+
+---
+- name: Install tool base on os
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install htop
+      yum:
+        name: htop
+        state: present
+      when: ansible_facts [ 'os_family' ] == "RedHat"
+
+
+Terraform
+
+provider "aws" {
+    region = "ap-south-1"
+}
+
+this is route table 
+
+resource "aws_route_tuble" "RT_Public" {
+    vpc_id = aws_vpc.myvpc.id
+    route = []
+    tags = {
+        Name = "Route Table for Public Subnet"
+    }
+}
+
+
+resource "aws_route_tuble" "RT_Private" {
+    vpc_id = aws_vpc.myvpc.id
+    route = []
+    tags = {
+        Name = "Route Tuble for Private Subent"
+    }
+}
+
+This is the Association of the route table and the route 
+
+rosource "aws_route" "Public" {
+    route_table_id         = aws_route_table.RT_Public.id
+    destination_cidr_block = "0.0.0.0/0"
+    gateway_id             = aws_internet_gateway.igw.id
+}
+
+resource "aws_route_table_association" "Public_1" {
+    subnet_id = aws_subnet.public_subnet.id
+    route_table_id = aws_route_table.RT_Public.id
+}
+
+
+rosource "aws_route" "Private" {
+    route_table_id         = aws_route_table.RT_Private.id
+    destination_cidr_block = "0.0.0.0/0"
+    gateway_id             = gateway_id = aws_nat_gateway.nat_gateway.id
+}
+
+resource "aws_route_table_association" "Private_1" {
+    subnet_id = aws_subnet.Private_subnet.id
+    route_table_id = aws_route_table.RT_Private.id
+}
+
+
+
+kubernetes
+
+apiVersion = v1
+kind: Secret
+metadata: 
+    name: pathnex-secret
+type: Opaque
+data: 
+    password: ctiIPHIHUHIHYYY==
+
+
+
+Shell Script
+
+#!/bin/bash
+
+for i in {1..10}; do
+    echo "Nubmer: $i"
+done
+
+
+Jenkins
+
+pipeline{
+    agent any
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                git url: 'https://github.com/Pathnex/sample-java-app.git'
+            }
+        }
+
+        stage('Build') {
+            step {
+                sh '''
+                if [ -d ".m2" ]; then
+                    echo "Using cached dependecies"
+                eles
+                    mvn clean compile
+                fi
+                '''
+            }
+        }
+    }
+}
+
+
+GitLad CI
+
+stages:
+    - build
+
+build:
+    stage:build
+    image: maven:3.8.1-jdk-17
+    cache:
+        key: maven-cache
+        paths:
+            - .m2/repository
+    script:
+        - git clone https://github.com/Pathnex/sample-java-app.git
+        - cd sample-java-app
+        - mvn clean compile
