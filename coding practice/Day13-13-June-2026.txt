@@ -1,0 +1,95 @@
+Ansible 
+
+---
+- name: Broken
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install
+      yum:
+        name: nginx
+        state: present
+
+
+Terraform
+
+provider "aws" {
+    region = "ap-south-1"
+}
+
+resource "aws_instance" "Pathnex_Ec2" {
+  ami           = "ami-0abcd1234abcd1234"
+  instance_type = "r5.2xlarge"
+  vpc_id        = aws_vpc.myvpc.id
+  subnet_id     = aws_subnet.public_subnet_1.id
+  key_name      = "Jump-Server"
+
+  tags = {
+    Name = "Pathnex_Ec2"
+  }
+}
+
+
+kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Broken
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec: 
+      containers:
+        - name: nginx
+          image: nginx:latest
+          Ports:
+            - containerPort:
+                ports: 80
+
+
+
+Jenkins Pipeline
+
+pipeline {
+  agent any
+  environment {
+    INSTITUTE_NAME = "Pathnex"
+  }
+  matrix {
+    axes {
+      axis {
+        name 'JAVA_VERSION'
+        values '8', '11','17'
+      }
+    }
+    stages {
+      stage('Build') {
+        steps {
+          sh "echo Building with java $JAVA_VERSION"
+        }
+      }
+    }
+  }
+}
+
+Gitlab CI
+
+stages:
+  - Build
+
+build:
+  stage: build
+  image: maven:3.8.1-jdk-17
+  parallel:
+    matrix:
+      - JAVA_VERSION: ['8', '11', '17']
+  script:
+    - echo "Building with Java $JAVA_VERSION"
